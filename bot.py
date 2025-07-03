@@ -31,7 +31,8 @@ languages = {
         "menu": ["📥 خرید سهام", "💵 دریافت سود", "📤 برداشت", "💼 وضعیت من", "👥 دعوت دوستان", "🌐 تغییر زبان"],
         "choose_plan": "لطفاً پلن مورد نظر خود را انتخاب کن:",
         "send_txid": "لطفاً TxID واریز به آدرس زیر را ارسال کن:"
-USDT(TRC20): {}",
+        USDT (TRC-20):"TKBvzFm5byVVr7eG1z8NAC6HvYsV4iXfGe"
+        
         "confirmed": "✅ تراکنش شما برای پلن {} تأیید شد.",
         "already_today": "شما امروز سودتان را دریافت کرده‌اید. فردا دوباره تلاش کنید.",
         "profit_added": "✅ {} تتر به سود شما اضافه شد.",
@@ -44,7 +45,7 @@ USDT(TRC20): {}",
         "welcome": "👋 Welcome to Crypto Flow Investment Bot",
         "menu": ["📥 Buy Stock", "💵 Get Profit", "📤 Withdraw", "💼 My Status", "👥 Invite Friends", "🌐 Change Language"],
         "choose_plan": "Please choose your investment plan:",
-        "send_txid": "Please send your TxID for payment to:
+        "send_txid": "Please send your TxID for payment to:"
 
 USDT(TRC20): {}",
         "confirmed": "✅ Your transaction for {} plan has been confirmed.",
