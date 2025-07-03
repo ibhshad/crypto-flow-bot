@@ -1,29 +1,33 @@
+import os
 import telebot
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 
-# بارگذاری تنظیمات
-with open('config.json', 'r') as f:
-    config = json.load(f)
+# تنظیمات از متغیرهای محیطی
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
+ADMIN_ID = os.environ.get('ADMIN_ID')
+WALLET_ADDRESS = os.environ.get('WALLET_ADDRESS')
 
-bot = telebot.TeleBot(config["BOT_TOKEN"])
-admin_id = config["ADMIN_ID"]
-wallet_address = config["WALLET_ADDRESS"]
+if not all([BOT_TOKEN, ADMIN_ID, WALLET_ADDRESS]):
+    raise ValueError("خطا: متغیرهای محیطی تنظیم نشده‌اند!")
 
-# فایل کاربران
+bot = telebot.TeleBot(BOT_TOKEN)
+
+# دیتابیس کاربران
 try:
     with open('users.json', 'r') as f:
         users = json.load(f)
 except (FileNotFoundError, json.JSONDecodeError):
     users = {}
 
-# پلن‌ها
+# پلن‌های سرمایه‌گذاری
 plans = {
     "mini": {"price": 39, "daily_profit": 3, "name": {"fa": "مینی", "en": "Mini"}},
     "average": {"price": 59, "daily_profit": 7, "name": {"fa": "متوسط", "en": "Average"}},
     "large": {"price": 100, "daily_profit": 14, "name": {"fa": "بزرگ", "en": "Large"}}
 }
 
+# متن‌های چندزبانه
 languages = {
     "fa": {
         "welcome": "👋 خوش آمدی به ربات سرمایه‌گذاری Crypto Flow",
@@ -123,7 +127,7 @@ def handle_buy(call):
     save_users()
     bot.send_message(
         call.message.chat.id,
-        languages[lang]["send_txid"].format(wallet_address, plans[plan_key]["price"])
+        languages[lang]["send_txid"].format(WALLET_ADDRESS, plans[plan_key]["price"])
     )
 
 @bot.message_handler(func=lambda msg: msg.text.startswith("TXID_"))
@@ -149,7 +153,7 @@ def receive_txid(message):
         plan_data["price"],
         message.text
     )
-    bot.send_message(admin_id, admin_msg)
+    bot.send_message(ADMIN_ID, admin_msg)
     
     # پاسخ به کاربر
     bot.send_message(message.chat.id, languages[lang]["pending_approval"])
@@ -160,7 +164,7 @@ def receive_txid(message):
 
 @bot.message_handler(commands=['approve'])
 def approve_transaction(message):
-    if str(message.from_user.id) != admin_id:
+    if str(message.from_user.id) != ADMIN_ID:
         return
     
     try:
@@ -168,7 +172,7 @@ def approve_transaction(message):
         user_id = str(user_id)
         
         if user_id not in users:
-            bot.send_message(admin_id, "⚠️ کاربر یافت نشد.")
+            bot.send_message(ADMIN_ID, "⚠️ کاربر یافت نشد.")
             return
             
         users[user_id]["plans"].append(plan_key)
@@ -179,9 +183,9 @@ def approve_transaction(message):
             user_id,
             languages[lang]["confirmed"].format(plans[plan_key]["name"][lang])
         )
-        bot.send_message(admin_id, "✅ تراکنش تأیید شد.")
+        bot.send_message(ADMIN_ID, "✅ تراکنش تأیید شد.")
     except Exception as e:
-        bot.send_message(admin_id, f"⚠️ خطا: {str(e)}")
+        bot.send_message(ADMIN_ID, f"⚠️ خطا: {str(e)}")
 
 @bot.message_handler(func=lambda msg: msg.text in ["💵 دریافت سود", "💵 Get Profit"])
 def get_profit(message):
@@ -229,4 +233,5 @@ def status(message):
         )
     )
 
-bot.infinity_polling()
+if __name__ == "__main__":
+    bot.infinity_polling()
